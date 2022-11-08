@@ -1,38 +1,37 @@
-#keyvalue: attribute
-
-#map:
-#  keyvalue1: something
-#  keyvalue2: alsosomething
-#  nestedmap:
-#    keyvalue3: something
-
-#list:
-#  - item1
-#  - item2
-
 version: '3.7'
+
+networks:
+  disciples:
+    name: disciples
+    driver: bridge
+
+volumes:
+  mariadb_vol:
+    name: mariadb_vol
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /Users/kmeixner/data/mariadb_vol
 
 services:
   nginx:
-    image: nginx:latest
-    ports: 
+    container_name: matthew
+    ports:
       - 443:443
     build: requirements/nginx
-#    volumes:
-#      - ./html:/srcs/requirements/nginx
+    networks:
+      - disciples
+    restart: on-failure
+  #  volumes:
+  #    - ./html:/srcs/requirements/nginx
 
   mariadb:
-    image: mariadb:latest
-    ports: 
+    container_name: john
+    build: requirements/mariadb
+    ports:
       - 3306:3306
-    env_file:
-      - ./.env
-#    volumes:
-#      - ./html:/srcs/requirements/mariandb
+    networks:
+      - disciples
+    restart: on-failure
 
-  wordpress:
-    image: wordpress:latest
-    ports: 
-      - 9000:9000
-#    volumes:
-#      - ./html:/srcs/requirements/wordpress

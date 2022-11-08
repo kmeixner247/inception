@@ -1,8 +1,16 @@
 FROM alpine:3.16
 
-RUN apk update
-RUN apk add vim && \
-	apk add nginx && \
-	apk add openssl; \
-	mkdir -p /etc/nginx/ssl
-RUN 
+RUN apk update && apk add nginx && apk add openssl --no-cache
+RUN openssl req -newkey rsa:2048 \
+	-nodes \
+	-keyout /etc/ssl/private/kmeixner.key \
+	-x509 \
+	-days 365 \
+	-out /etc/ssl/certs/kmeixner.crt \
+	-subj "/C=DE/ST=Niedersachsen/L=Wolfsburg/O=42Wolfsburg/OU=Students/CN=kmeixner.42.fr"
+
+COPY conf/nginx.conf etc/nginx
+COPY conf/nginx.conf etc/conf.d/default.conf
+COPY contents/index.html contents/index.html
+
+CMD ["nginx", "-g", "daemon off;"]
