@@ -12,26 +12,54 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /Users/kmeixner/data/mariadb_vol
+      device: /home/despair/data/mariadb_vol
+  wordpress_vol:
+    name: wordpress_vol
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/despair/data/wordpress_vol
 
 services:
   nginx:
-    container_name: matthew
+    container_name: nginx
     ports:
       - 443:443
     build: requirements/nginx
     networks:
       - disciples
     restart: on-failure
-  #  volumes:
-  #    - ./html:/srcs/requirements/nginx
+    volumes:
+      - wordpress_vol:/var/www/html:rw
+    depends_on:
+      - wordpress
 
   mariadb:
-    container_name: john
+    container_name: mariadb
     build: requirements/mariadb
     ports:
       - 3306:3306
     networks:
       - disciples
     restart: on-failure
+    volumes:
+      - mariadb_vol:/var/lib/mysql:rw
+    env_file:
+      - .env
 
+  wordpress:
+    build: requirements/wordpress
+    container_name: wordpress
+    # image: wordpress
+    restart: on-failure
+    ports:
+      - 9000:9000
+    env_file:
+      - .env
+    volumes:
+      - wordpress_vol:/var/www/html:rw
+    depends_on:
+      - mariadb
+    networks:
+      - disciples

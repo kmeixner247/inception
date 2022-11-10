@@ -13,4 +13,6 @@ COPY conf/nginx.conf etc/nginx
 COPY conf/nginx.conf etc/conf.d/default.conf
 COPY contents/index.html contents/index.html
 
+EXPOSE 443
+
 CMD ["nginx", "-g", "daemon off;"]

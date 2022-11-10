@@ -1,29 +1,15 @@
 #!/bin/sh
 
-if [ ! -d "/var/lib/mysql/$MYSQL_DATABASE" ]; then
-echo "Setting up database..."
-mysql_install_db
-service mysql start
-# https://stackoverflow.com/a/36916378
-mysql_secure_installation << EOF
-y
-toor
-toor
-y
-n
-y
-y
-EOF
+if [ ! -d "/var/lib/mysql/$WORDPRESS_DB_NAME" ]; then
+	echo "Setting up database..."
+	# mariadb-install-db
+	mysql_install_db --user=mysql --ldata=/var/lib/mysql
 
-mysql -uroot -ptoor << EOF
-CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
-CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
-GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';
-FLUSH PRIVILEGES;
-ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
-EOF
 
-service mysql stop
+	sed -i "s/WORDPRESS_DB_USER/$WORDPRESS_DB_USER/g" /var/mariadb/setup.sql
+	sed -i "s/WORDPRESS_DB_PWD/$WORDPRESS_DB_PWD/g" /var/mariadb/setup.sql
+	sed -i "s/WORDPRESS_DB_NAME/$WORDPRESS_DB_NAME/g" /var/mariadb/setup.sql
+	sed -i "s/MYSQL_ROOT_PASSWORD/$MYSQL_ROOT_PASSWORD/g" /var/mariadb/setup.sql
 fi
 
 exec "$@"
