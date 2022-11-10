@@ -2,7 +2,6 @@
 
 if [ ! -d "/var/lib/mysql/$WORDPRESS_DB_NAME" ]; then
 	echo "Setting up database..."
-	# mariadb-install-db
 	mysql_install_db --user=mysql --ldata=/var/lib/mysql
 
 

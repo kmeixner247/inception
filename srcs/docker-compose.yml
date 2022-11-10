@@ -51,7 +51,6 @@ services:
   wordpress:
     build: requirements/wordpress
     container_name: wordpress
-    # image: wordpress
     restart: on-failure
     ports:
       - 9000:9000
